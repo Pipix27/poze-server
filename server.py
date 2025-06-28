@@ -1,4 +1,4 @@
-from flask import Flask, request, send_from_directory
+from flask import Flask, request, send_from_directory, render_template_string
 import os
 
 app = Flask(__name__)
@@ -26,6 +26,20 @@ def upload_file():
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
+
+@app.route('/galerie')
+def galerie():
+    poze = os.listdir(UPLOAD_FOLDER)
+    html = """
+    <h1>Galerie Foto</h1>
+    {% for poza in poze %}
+        <div style="margin-bottom: 20px;">
+            <img src="/uploads/{{ poza }}" alt="{{ poza }}" style="max-width: 100%; height: auto;" />
+            <p>{{ poza }}</p>
+        </div>
+    {% endfor %}
+    """
+    return render_template_string(html, poze=poze)
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
